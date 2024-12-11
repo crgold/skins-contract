@@ -38,24 +38,33 @@ contract Skins is ERC721Drop, IERC721Enumerable {
         return _ownedTokens[owner][index];
     }
 
-    function _beforeTokenTransfer(
+    function _beforeTokenTransfers(
         address from,
         address to,
-        uint256 tokenId,
-        uint256 batchSize
+        uint256 startTokenId,
+        uint256 quantity
     ) internal override {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+        super._beforeTokenTransfers(from, to, startTokenId, quantity);
+
+        for (uint256 i = 0; i < quantity; i++) {
+        uint256 tokenId = startTokenId + i;
 
         if (from == address(0)) {
+            // Minting new tokens
             _addTokenToAllTokensEnumeration(tokenId);
         } else if (from != to) {
+            // Transferring tokens
             _removeTokenFromOwnerEnumeration(from, tokenId);
         }
+
         if (to == address(0)) {
+            // Burning tokens
             _removeTokenFromAllTokensEnumeration(tokenId);
         } else if (to != from) {
+            // Receiving tokens
             _addTokenToOwnerEnumeration(to, tokenId);
         }
+    }
     }
 
     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
@@ -69,6 +78,7 @@ contract Skins is ERC721Drop, IERC721Enumerable {
     }
 
     function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+        require(_ownedTokens[from].length > 0, "No tokens to remove");
         uint256 lastTokenIndex = _ownedTokens[from].length - 1;
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
 
@@ -83,6 +93,7 @@ contract Skins is ERC721Drop, IERC721Enumerable {
     }
 
     function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
+        require(_allTokens.length > 0, "No tokens to remove");
         uint256 lastTokenIndex = _allTokens.length - 1;
         uint256 tokenIndex = _allTokensIndex[tokenId];
 
