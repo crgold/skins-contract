@@ -38,6 +38,15 @@ contract Skins is ERC721Drop, IERC721Enumerable {
         return _ownedTokens[owner][index];
     }
 
+    function tokenOfOwner(address owner) external view returns (uint256[] memory) {
+        uint256 tokenCount = balanceOf(owner);
+        uint256[] memory tokens = new uint256[](tokenCount);
+        for (uint256 i = 0; i < tokenCount; i++) {
+            tokens[i] = this.tokenOfOwnerByIndex(owner, i);
+        }
+        return tokens;
+    }
+
     function _beforeTokenTransfers(
         address from,
         address to,
