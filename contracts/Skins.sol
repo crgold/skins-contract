@@ -106,4 +106,8 @@ contract Skins is ERC721Drop, IERC721Enumerable {
         _allTokens.pop();
         delete _allTokensIndex[tokenId];
     }
+
+    function setBaseURI(uint256 _batchId, string memory _baseURI) external onlyOwner {
+        super._setBaseURI(_batchId, _baseURI);
+    }
 }
